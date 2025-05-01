@@ -1,0 +1,31 @@
+{
+  "name": "Sora Repository",
+  "identifier": "me.cranci.sulfur",
+  "iconURL": "https://raw.githubusercontent.com/cranci1/Sora/refs/heads/dev/Sora/Assets.xcassets/AppIcon.appiconset/darkmode.png",
+  "apps": [
+    {
+      "name": "Sora",
+      "bundleIdentifier": "me.cranci.sulfur",
+      "developerName": "cranci1",
+      "iconURL": "https://raw.githubusercontent.com/cranci1/Sora/refs/heads/dev/Sora/Assets.xcassets/AppIcon.appiconset/darkmode.png",
+      "localizedDescription": "Sora Alpha Version",
+      "subtitle": "iOS Application",
+      "tintColor": "848ef9",
+      "versions": [
+        {
+          "version": "alpha",
+          "date": "???",
+          "size": 0,
+          "downloadURL": "https://github.com/Seeike/Sora-Repo/raw/refs/heads/main/public-build/Sulfur.ipa"
+        }
+      ],
+      "size": 0,
+      "version": "alpha",
+      "versionDate": "2025-04-22T00:00:00Z",
+      "downloadURL": "https://github.com/Seeike/Sora-Repo/raw/refs/heads/main/public-build/Sulfur.ipa",
+      "appPermissions": {},
+      "screenshotURLs": []
+    }
+  ],
+  "news": []
+}
