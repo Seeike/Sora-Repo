@@ -25,6 +25,12 @@ function headRequest(url) {
       resolve(parseInt(length, 10));
     });
 
+          // kill it after 10 seconds
+      req.setTimeout(10_000, () => {
+        reject(new Error(`HEAD ${url} timed out`));
+        req.destroy();
+     });
+
     req.on('error', reject);
     req.end();
   });
