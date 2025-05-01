@@ -15,11 +15,11 @@
         {
           "version": "alpha",
           "date": "???",
-          "size": 0,
+          "size": 1195012,
           "downloadURL": "https://github.com/Seeike/Sora-Repo/raw/refs/heads/main/public-build/Sulfur.ipa"
         }
       ],
-      "size": 0,
+      "size": 1195012,
       "version": "alpha",
       "versionDate": "2025-04-22T00:00:00Z",
       "downloadURL": "https://github.com/Seeike/Sora-Repo/raw/refs/heads/main/public-build/Sulfur.ipa",
@@ -28,5 +28,5 @@
     }
   ],
   "news": [],
-  "ipa_size": "0.00 MB"
+  "ipa_size": "1.14 MB"
 }
