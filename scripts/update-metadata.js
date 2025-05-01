@@ -13,7 +13,6 @@ function headRequest(url) {
     options.method = 'HEAD';
 
     const req = https.request(options, (res) => {
-      // Follow redirects
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
         return resolve(headRequest(res.headers.location));
       }
@@ -27,7 +26,6 @@ function headRequest(url) {
       resolve(parseInt(length, 10));
     });
 
-    // Timeout after 10 seconds
     req.setTimeout(10_000, () => {
       reject(new Error(`HEAD ${url} timed out`));
       req.destroy();
@@ -61,11 +59,8 @@ async function main() {
   const raw = await readFile(jsonPath, 'utf-8');
   const data = JSON.parse(raw);
 
-  // 1. Resolve the raw download URL
-  let downloadURL = data.apps[0].versions[0].downloadURL;
-  let headURL = downloadURL;
-
-  // Convert GitHub 'raw/refs/heads' URLs to raw.githubusercontent.com
+  // Convert GitHub raw URL if necessary
+  let headURL = data.apps[0].versions[0].downloadURL;
   if (headURL.includes('github.com') && headURL.includes('/raw/refs/heads/')) {
     headURL = headURL
       .replace('https://github.com/', 'https://raw.githubusercontent.com/')
@@ -73,25 +68,45 @@ async function main() {
   }
   console.log(`Fetching size for: ${headURL}`);
 
-  // 2. Fetch size
+  // Fetch IPA size
   const sizeBytes = await headRequest(headURL);
-  const sizeMB = (sizeBytes / 1048576).toFixed(2) + ' MB';
 
-  // 3. Fetch latest Actions run date
+  // Fetch latest workflow run date
   const buildDate = await fetchLatestRunDate();
   console.log(`Latest build date: ${buildDate}`);
 
-  // 4. Update JSON fields
+  // Update version metadata
   data.apps[0].versions[0].size = sizeBytes;
-  data.apps[0].size = sizeBytes;
   data.apps[0].versions[0].date = buildDate;
+  data.apps[0].size = sizeBytes;
   data.apps[0].versionDate = buildDate;
-  data.ipa_size = sizeMB;
-  data.lastBuildDate = buildDate;
 
-  // 5. Write back with pretty formatting
-  await writeFile(jsonPath, JSON.stringify(data, null, 2) + '\n');
-  console.log(`Updated ${jsonPath}: ${sizeBytes} bytes (${sizeMB}), date ${buildDate}`);
+  // Reconstruct JSON in desired shape
+  const output = {
+    name: data.name,
+    identifier: data.identifier,
+    iconURL: data.iconURL,
+    apps: data.apps.map(app => ({
+      name: app.name,
+      bundleIdentifier: app.bundleIdentifier,
+      developerName: app.developerName,
+      iconURL: app.iconURL,
+      localizedDescription: app.localizedDescription,
+      subtitle: app.subtitle,
+      tintColor: app.tintColor,
+      versions: app.versions,
+      size: app.size,
+      version: app.version,
+      versionDate: app.versionDate,
+      downloadURL: app.downloadURL,
+      appPermissions: app.appPermissions,
+      screenshotURLs: app.screenshotURLs
+    })),
+    news: data.news || []
+  };
+
+  await writeFile(jsonPath, JSON.stringify(output, null, 2) + '\n');
+  console.log(`Updated ${jsonPath}: ${sizeBytes} bytes, buildDate ${buildDate}`);
 }
 
 main().catch(err => {
