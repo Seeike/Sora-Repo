@@ -2,21 +2,19 @@ name: Auto-Update IPA from Nightly
 
 on:
   schedule:
-    - cron: '*/10 * * * *'    # every 10 minutes
-  workflow_dispatch:          # allow manual runs
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Download latest IPA zip
         run: |
-          curl -L -o sulfur.zip \
-            https://nightly.link/cranci1/Sora/workflows/build/dev/Sulfur-IPA.zip
+          curl -L -o sulfur.zip https://nightly.link/cranci1/Sora/workflows/build/dev/Sulfur-IPA.zip
 
       - name: Unzip the IPA
         run: |
