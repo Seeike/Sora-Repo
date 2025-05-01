@@ -2,12 +2,11 @@ name: Auto-Update IPA from Nightly
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # Every 10 minutes
-  workflow_dispatch:        # Allow manual trigger from Actions tab
+    - cron: '*/10 * * * *'    # every 10 minutes
+  workflow_dispatch:          # allow manual runs
 
 jobs:
   update:
-    name: Download and Update IPA
     runs-on: ubuntu-latest
 
     steps:
@@ -16,23 +15,35 @@ jobs:
 
       - name: Download latest IPA zip
         run: |
-          curl -L -o sulfur.zip https://nightly.link/Seeike/Sora/workflows/build/dev/Sulfur-IPA.zip
+          curl -L -o sulfur.zip \
+            https://nightly.link/cranci1/Sora/workflows/build/dev/Sulfur-IPA.zip
 
       - name: Unzip the IPA
         run: |
           rm -rf tmp-ipa
-          mkdir -p tmp-ipa
+          mkdir tmp-ipa
           unzip -o sulfur.zip -d tmp-ipa
           mkdir -p public-build
-          cp -f tmp-ipa/Sulfur.ipa public-build/Sulfur.ipa
+          cp tmp-ipa/Sulfur.ipa public-build/Sulfur.ipa
 
-      - name: Set Git user
+      - name: Get IPA file size
+        id: get_size
         run: |
-          git config user.name "auto-bot"
-          git config user.email "bot@example.com"
+          size_bytes=$(curl -sI -L https://nightly.link/cranci1/Sora/workflows/build/dev/Sulfur-IPA.zip \
+                        | grep -i '^Content-Length:' | awk '{print $2}' | tr -d '\r')
+          size_mb=$(awk "BEGIN {printf \"%.2f\", $size_bytes/1048576}")
+          echo "IPA_SIZE_MB=${size_mb} MB" >> $GITHUB_ENV
+
+      - name: Update sorarepo.json
+        run: |
+          jq --arg size "${IPA_SIZE_MB}" '.ipa_size = $size' sorarepo.json \
+            > tmp.json && mv tmp.json sorarepo.json
 
       - name: Commit & push if changed
         run: |
-          git add -f public-build/Sulfur.ipa
-          git diff --quiet && git diff --staged --quiet || git commit -m "Auto: Update IPA [skip ci]"
+          git config user.name "auto-bot"
+          git config user.email "bot@example.com"
+          git add -f public-build/Sulfur.ipa sorarepo.json
+          git diff --quiet && git diff --staged --quiet \
+            || git commit -m "Auto: Update IPA and metadata [skip ci]"
           git push
