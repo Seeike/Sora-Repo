@@ -21,24 +21,14 @@ jobs:
       - name: Unzip the IPA
         run: |
           rm -rf tmp-ipa
-          mkdir tmp-ipa
+          mkdir -p tmp-ipa
           unzip -o sulfur.zip -d tmp-ipa
           mkdir -p public-build
           cp tmp-ipa/Sulfur.ipa public-build/Sulfur.ipa
 
-      - name: Get IPA file size
-        id: get_size
+      - name: Update metadata via script
         run: |
-          size_bytes=$(curl -sI -L https://nightly.link/cranci1/Sora/workflows/build/dev/Sulfur-IPA.zip \
-                        | grep -i '^Content-Length:' | awk '{print $2}' | tr -d '\r')
-          size_mb=$(awk "BEGIN {printf \"%.2f\", $size_bytes/1048576}")
-          echo "IPA_SIZE_MB=${size_mb} MB" >> $GITHUB_ENV
-
-      - name: Update sorarepo.json
-        run: |
-          jq --arg bytes "$size_bytes" \
-             '.apps[0].versions[0].size = ($bytes | tonumber)' \
-             sorarepo.json > tmp.json && mv tmp.json sorarepo.json
+          node scripts/update-metadata.js
 
       - name: Commit & push if changed
         run: |
