@@ -36,21 +36,10 @@ async function main() {
   const data = JSON.parse(raw);
 
   // Retrieve the IPA download URL from the JSON
-  let downloadURL = data.apps[0].versions[0].downloadURL;
+  const downloadURL = data.apps[0].versions[0].downloadURL;
 
-  console.log(`Original URL: ${downloadURL}`);
-
-  // Convert GitHub raw URL to raw.githubusercontent.com if needed
-  let headURL = downloadURL;
-  if (headURL.includes('github.com') && headURL.includes('/raw/refs/heads/')) {
-    headURL = headURL
-      .replace('https://github.com/', 'https://raw.githubusercontent.com/')
-      .replace('/raw/refs/heads/', '/');
-    console.log(`Converted to raw URL: ${headURL}`);
-  }
-
-  console.log(`Fetching size for: ${headURL}`);
-  const sizeBytes = await headRequest(headURL);
+  console.log(`Fetching size for: ${downloadURL}`);
+  const sizeBytes = await headRequest(downloadURL);
   const sizeMB = (sizeBytes / 1048576).toFixed(2) + ' MB';
 
   // Update fields in JSON
