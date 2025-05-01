@@ -36,8 +36,9 @@ jobs:
 
       - name: Update sorarepo.json
         run: |
-          jq --arg size "${IPA_SIZE_MB}" '.ipa_size = $size' sorarepo.json \
-            > tmp.json && mv tmp.json sorarepo.json
+          jq --arg bytes "$size_bytes" \
+             '.apps[0].versions[0].size = ($bytes | tonumber)' \
+             sorarepo.json > tmp.json && mv tmp.json sorarepo.json
 
       - name: Commit & push if changed
         run: |
