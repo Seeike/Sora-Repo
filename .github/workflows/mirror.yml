@@ -2,7 +2,7 @@ name: Auto-Update IPA from Nightly
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/2 * * * *'
   workflow_dispatch:
 
 jobs:
