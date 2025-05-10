@@ -14,7 +14,7 @@ jobs:
 
       - name: Download latest IPA zip
         run: |
-          curl -L -o sulfur.zip https://nightly.link/cranci1/Sora/workflows/build/dev/Sulfur-IPA.zip
+          curl -L -o sulfur.zip https://nightly.link/Seeike/Sora/workflows/build/dev/Sulfur-IPA.zip
 
       - name: Unzip the IPA
         run: |
